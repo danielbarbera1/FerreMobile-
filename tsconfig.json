@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+, "app/modal.tsxjs", "app/_layout.js", "app/(tabs)/inicio.js", "app/(tabs)/_layout.js", "app/(tabs)/explorar.js", "components/external-link.js", "components/haptic-tab.js", "components/hello-wave.js", "components/parallax-scroll-view.js", "components/themed-text.js", "components/themed-view.js", "components/ui/collapsible.js", "components/ui/icon-symbol.ios.js", "components/ui/icon-symbol.js", "constants/theme.js", "hooks/use-color-scheme.js", "hooks/use-color-scheme.web.js", "hooks/use-theme-color.js"  ]
+}
