@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCart } from '@/context/CartContext';
 
 const BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ||
@@ -194,6 +195,7 @@ const ProductDetailModal = ({ visible, product, onClose, onAddToCart }) => {
 };
 
 const InicioScreen = () => {
+  const { addToCart } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [categories, setCategories] = useState([DEFAULT_CATEGORY]);
@@ -321,7 +323,17 @@ const InicioScreen = () => {
   };
 
   const handleAddToCart = (product) => {
-    Alert.alert("Añadido al carrito", `${product.nombre} — $${product.precio.toFixed(2)}`, [{ text: "OK" }]);
+    addToCart({
+      id: product.id,
+      nombre: product.nombre,
+      precio: product.precio,
+      imagen: `https://ui-avatars.com/api/?name=${encodeURIComponent(product.nombre)}&background=E8EAF6&color=6C63FF&size=200&bold=true`,
+    });
+    Alert.alert(
+      "✅ Agregado al carrito",
+      `${product.nombre} — $${product.precio.toFixed(2)}`,
+      [{ text: "OK" }]
+    );
   };
 
   const renderHeader = () => (

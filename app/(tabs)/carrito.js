@@ -1,69 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   FlatList,
   TouchableOpacity,
   Image,
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCart } from '@/context/CartContext';
 
 const CarritoScreen = () => {
-  // Estado inicial de ejemplo con productos de ferretería
-  const [cartItems, setCartItems] = useState([
-    {
-      id: '1',
-      nombre: 'Taladro Percutor 650W',
-      precio: 189.90,
-      cantidad: 1,
-      imagen: 'https://via.placeholder.com/150',
-    },
-    {
-      id: '2',
-      nombre: 'Juego de Destornilladores 6 Piezas',
-      precio: 45.50,
-      cantidad: 2,
-      imagen: 'https://via.placeholder.com/150',
-    },
-    {
-      id: '3',
-      nombre: 'Cinta Métrica 5m',
-      precio: 18.00,
-      cantidad: 1,
-      imagen: 'https://via.placeholder.com/150',
-    },
-  ]);
+  const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCart();
 
-  // Manejar incremento de cantidad
-  const handleIncrease = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
-      )
-    );
-  };
-
-  // Manejar decremento de cantidad
-  const handleDecrease = (id) => {
-    setCartItems((prevItems) =>
-      prevItems
-        .map((item) =>
-          item.id === id ? { ...item, cantidad: item.cantidad - 1 } : item
-        )
-        .filter((item) => item.cantidad > 0)
-    );
-  };
-
-  // Eliminar producto
-  const handleRemove = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
-
-  // Vaciar carrito completo
   const handleClearCart = () => {
     if (cartItems.length === 0) return;
     Alert.alert(
@@ -71,29 +22,28 @@ const CarritoScreen = () => {
       '¿Estás seguro de que deseas eliminar todos los productos?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        { text: 'Vaciar', style: 'destructive', onPress: () => setCartItems([]) },
+        { text: 'Vaciar', style: 'destructive', onPress: clearCart },
       ]
     );
   };
 
-  // Cálculos de montos
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.precio * item.cantidad,
-    0
-  );
-  const envio = cartItems.length > 0 ? 15.00 : 0.00;
-  const total = subtotal + envio;
-
-  // Realizar pedido
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
     Alert.alert('¡Éxito!', 'Tu pedido ha sido procesado correctamente.');
   };
 
+  const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const envio = cartItems.length > 0 ? 15.0 : 0.0;
+  const total = subtotal + envio;
+
   const renderCartItem = ({ item }) => (
     <View style={styles.cartCard}>
       <Image
-        source={{ uri: item.imagen }}
+        source={{
+          uri:
+            item.imagen ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(item.nombre)}&background=E8EAF6&color=6C63FF&size=200&bold=true`,
+        }}
         style={styles.productImage}
       />
       <View style={styles.itemInfo}>
@@ -101,7 +51,7 @@ const CarritoScreen = () => {
           <Text style={styles.productName} numberOfLines={2}>
             {item.nombre}
           </Text>
-          <TouchableOpacity onPress={() => handleRemove(item.id)}>
+          <TouchableOpacity onPress={() => removeFromCart(item.id)}>
             <Ionicons name="trash-outline" size={20} color="#FF6B6B" />
           </TouchableOpacity>
         </View>
@@ -111,14 +61,14 @@ const CarritoScreen = () => {
         <View style={styles.quantityContainer}>
           <TouchableOpacity
             style={styles.qtyButton}
-            onPress={() => handleDecrease(item.id)}
+            onPress={() => decreaseQuantity(item.id)}
           >
             <Text style={styles.qtyButtonText}>-</Text>
           </TouchableOpacity>
           <Text style={styles.qtyText}>{item.cantidad}</Text>
           <TouchableOpacity
             style={styles.qtyButton}
-            onPress={() => handleIncrease(item.id)}
+            onPress={() => increaseQuantity(item.id)}
           >
             <Text style={styles.qtyButtonText}>+</Text>
           </TouchableOpacity>
@@ -128,7 +78,7 @@ const CarritoScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Mi Carrito</Text>
@@ -152,7 +102,7 @@ const CarritoScreen = () => {
           <FlatList
             data={cartItems}
             renderItem={renderCartItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id?.toString()}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
@@ -214,8 +164,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     flexDirection: 'row',
     padding: 12,
-    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.08)',
     elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   productImage: {
     width: 90,
@@ -292,8 +245,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     padding: 20,
-    boxShadow: '0px -4px 10px rgba(0, 0, 0, 0.05)',
     elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -331,8 +287,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 16,
     alignItems: 'center',
-    boxShadow: '0px 4px 10px rgba(108, 99, 255, 0.3)',
     elevation: 5,
+    shadowColor: '#6C63FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
   checkoutButtonText: {
     color: '#FFFFFF',
