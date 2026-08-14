@@ -28,7 +28,7 @@ export default function TabLayout() {
           title: 'Inicio',
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
-              <Ionicons size={22} name={focused ? "home" : "home-outline"} color={color} />
+              <Ionicons size={20} name={focused ? "home" : "home-outline"} color={color} />
             </View>
           ),
         }}
@@ -39,7 +39,7 @@ export default function TabLayout() {
           title: 'Carrito',
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
-              <Ionicons size={22} name={focused ? "cart" : "cart-outline"} color={color} />
+              <Ionicons size={20} name={focused ? "cart" : "cart-outline"} color={color} />
             </View>
           ),
         }}
@@ -50,7 +50,7 @@ export default function TabLayout() {
           title: 'Perfil',
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
-              <Ionicons size={22} name={focused ? "person" : "person-outline"} color={color} />
+              <Ionicons size={20} name={focused ? "person" : "person-outline"} color={color} />
             </View>
           ),
         }}
@@ -62,36 +62,40 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 25 : 15,
-    left: 20,
-    right: 20,
-    elevation: 8,
+    bottom: Platform.OS === 'ios' ? 35 : 25,
+    left: 40,
+    right: 40,
     backgroundColor: '#FFFFFF',
     borderRadius: 25,
-    height: 70,
-    shadowColor: '#6C63FF',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    borderWidth: 1.5,
+    height: 65,
+    borderWidth: 1,
     borderColor: '#F3F4FB',
+    // Sombras nativas compatibles con iOS y Android:
+    elevation: 8,
+    shadowColor: '#6C63FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    paddingBottom: Platform.OS === 'ios' ? 10 : 8,
+    paddingTop: 8,
   },
   tabBarItem: {
-    paddingVertical: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tabBarLabel: {
     fontSize: 11,
     fontWeight: '700',
-    marginTop: -4,
+    marginTop: 2,
   },
   iconContainer: {
-    padding: 8,
-    borderRadius: 16,
+    width: 44,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconContainerActive: {
-    backgroundColor: '#EDE9FE', // Fondo suave cuando está activo
+    backgroundColor: '#EDE9FE',
   },
 });

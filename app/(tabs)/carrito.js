@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const CarritoScreen = () => {
   // Estado inicial de ejemplo con productos de ferretería
   const [cartItems, setCartItems] = useState([
@@ -213,10 +214,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     flexDirection: 'row',
     padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.08)',
     elevation: 3,
   },
   productImage: {
@@ -294,10 +292,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    boxShadow: '0px -4px 10px rgba(0, 0, 0, 0.05)',
     elevation: 8,
   },
   summaryRow: {
@@ -336,10 +331,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#6C63FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    boxShadow: '0px 4px 10px rgba(108, 99, 255, 0.3)',
     elevation: 5,
   },
   checkoutButtonText: {

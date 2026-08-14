@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   FlatList,
   Image,
@@ -17,6 +16,7 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ||
@@ -295,6 +295,7 @@ const InicioScreen = () => {
   const handleSelectCategory = (cat) => {
     if (searchMode) return;
     setSelectedCategory(cat.id);
+    setProducts([]); // Clear list instantly to show empty state loader
     setPage(1);
     fetchProducts(cat.id === "all" ? "all" : cat.slug, 1, false);
   };
@@ -449,9 +450,9 @@ const InicioScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8F9FE" />
-
+      
       {/* Buscador fijo fuera del FlatList para que nunca pierda el foco */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
@@ -475,34 +476,34 @@ const InicioScreen = () => {
         </View>
       </View>
 
-      {loading && !refreshing ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#6C63FF" />
-          <Text style={styles.loadingText}>Cargando productos...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={products}
-          renderItem={renderProductItem}
-          keyExtractor={(item, index) => (item.id_producto ? item.id_producto.toString() : item.id ? item.id.toString() : index.toString())}
-          ListHeaderComponent={renderHeader}
-          ListFooterComponent={renderFooter}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.4}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#6C63FF"]} tintColor="#6C63FF" />}
-          ListEmptyComponent={
+      <FlatList
+        data={products}
+        renderItem={renderProductItem}
+        keyExtractor={(item, index) => (item.id_producto ? item.id_producto.toString() : item.id ? item.id.toString() : index.toString())}
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="none"
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.4}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={["#6C63FF"]} tintColor="#6C63FF" />}
+        ListEmptyComponent={
+          loading && !refreshing ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#6C63FF" />
+              <Text style={styles.loadingText}>Cargando productos...</Text>
+            </View>
+          ) : (
             <View style={styles.emptyContainer}>
               <Ionicons name="search-outline" size={56} color="#ccc" />
               <Text style={styles.emptyTitle}>Sin resultados</Text>
               <Text style={styles.emptyText}>No se encontraron productos.</Text>
             </View>
-          }
-        />
-      )}
+          )
+        }
+      />
 
       <ProductDetailModal
         visible={modalVisible}
@@ -521,7 +522,7 @@ const modalStyles = StyleSheet.create({
   handle: { width: 40, height: 5, borderRadius: 3, backgroundColor: "#E0E0E0", alignSelf: "center", marginTop: 12, marginBottom: 8 },
   imageWrapper: { alignItems: "center", backgroundColor: "#F3F4FB", paddingVertical: 24, position: "relative" },
   productImage: { width: SCREEN_WIDTH * 0.55, height: 180 },
-  closeBtn: { position: "absolute", top: 14, right: 18, backgroundColor: "#FFFFFF", width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 4 },
+  closeBtn: { position: "absolute", top: 14, right: 18, backgroundColor: "#FFFFFF", width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center", boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.12)", elevation: 4 },
   infoScroll: { paddingHorizontal: 22, paddingTop: 18 },
   loadingRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 30 },
   loadingText: { color: "#999", fontSize: 14, marginLeft: 10 },
@@ -553,17 +554,17 @@ const styles = StyleSheet.create({
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
   appName: { fontSize: 28, fontWeight: "900", color: "#6C63FF", letterSpacing: -0.5 },
   appTagline: { fontSize: 12, color: "#aaa", marginTop: 2 },
-  iconButton: { backgroundColor: "#FFFFFF", width: 46, height: 46, borderRadius: 15, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 3, position: "relative" },
+  iconButton: { backgroundColor: "#FFFFFF", width: 46, height: 46, borderRadius: 15, justifyContent: "center", alignItems: "center", boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.07)", elevation: 3, position: "relative" },
   notificationDot: { position: "absolute", top: 11, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: "#FF6B6B", borderWidth: 1.5, borderColor: "#FFF" },
   searchWrapper: { paddingHorizontal: 18, paddingTop: 10, paddingBottom: 6, backgroundColor: "#F8F9FE" },
-  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 16, paddingHorizontal: 16, height: 52, borderWidth: 1.5, borderColor: "#EDE9FE", shadowColor: "#6C63FF", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 3 },
+  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 16, paddingHorizontal: 16, height: 52, borderWidth: 1.5, borderColor: "#EDE9FE", boxShadow: "0px 3px 10px rgba(108, 99, 255, 0.06)", elevation: 3 },
   searchIcon: { marginRight: 10 },
   searchInput: { flex: 1, fontSize: 14, color: "#2D3436" },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 6, marginBottom: 12 },
   sectionTitle: { fontSize: 18, fontWeight: "800", color: "#1A1A2E" },
   productsCount: { fontSize: 13, color: "#aaa", fontWeight: "500" },
   promosScroll: { marginBottom: 18 },
-  promoCard: { width: 240, borderRadius: 22, padding: 18, marginRight: 14, shadowColor: "#000", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.18, shadowRadius: 12, elevation: 6 },
+  promoCard: { width: 240, borderRadius: 22, padding: 18, marginRight: 14, boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.18)", elevation: 6 },
   promoIconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.9)", justifyContent: "center", alignItems: "center", marginBottom: 10 },
   promoContent: { marginBottom: 10 },
   promoBadge: { color: "rgba(255,255,255,0.75)", fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 },
@@ -572,11 +573,11 @@ const styles = StyleSheet.create({
   promoCodeRow: { backgroundColor: "rgba(255,255,255,0.95)", paddingVertical: 6, paddingHorizontal: 12, borderRadius: 10, alignSelf: "flex-start" },
   promoCode: { fontSize: 12, fontWeight: "800" },
   categoriesScroll: { marginBottom: 18 },
-  categoryChip: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", paddingVertical: 10, paddingHorizontal: 16, borderRadius: 22, marginRight: 10, borderWidth: 1.5, borderColor: "#EDE9FE", shadowColor: "#6C63FF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  categoryChip: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", paddingVertical: 10, paddingHorizontal: 16, borderRadius: 22, marginRight: 10, borderWidth: 1.5, borderColor: "#EDE9FE", boxShadow: "0px 2px 6px rgba(108, 99, 255, 0.06)", elevation: 2 },
   categoryChipSelected: { backgroundColor: "#6C63FF", borderColor: "#6C63FF" },
   categoryChipText: { fontSize: 13, fontWeight: "600", color: "#2D3436" },
   categoryChipTextSelected: { color: "#FFFFFF" },
-  productCard: { backgroundColor: "#FFFFFF", borderRadius: 18, marginBottom: 14, flexDirection: "row", padding: 14, shadowColor: "#6C63FF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 4 },
+  productCard: { backgroundColor: "#FFFFFF", borderRadius: 18, marginBottom: 14, flexDirection: "row", padding: 14, boxShadow: "0px 4px 10px rgba(108, 99, 255, 0.08)", elevation: 4 },
   imageContainer: { position: "relative" },
   productImage: { width: 100, height: 100, borderRadius: 14, backgroundColor: "#F3F4FB" },
   stockBadge: { position: "absolute", bottom: 6, left: 0, right: 0, marginHorizontal: 4, flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderRadius: 8 },
