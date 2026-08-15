@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   Dimensions,
   RefreshControl,
   Alert,
+  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -210,6 +211,29 @@ const InicioScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchMode, setSearchMode] = useState(false);
 
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastData, setToastData] = useState({ title: "", subtitle: "" });
+  const toastY = useRef(new Animated.Value(-100)).current;
+
+  const showToast = (title, subtitle) => {
+    setToastData({ title, subtitle });
+    setToastVisible(true);
+    Animated.sequence([
+      Animated.spring(toastY, {
+        toValue: 50,
+        useNativeDriver: true,
+      }),
+      Animated.delay(2500),
+      Animated.timing(toastY, {
+        toValue: -100,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setToastVisible(false);
+    });
+  };
+
   const fetchCategories = async () => {
     try {
       const res = await fetch(API.categorias);
@@ -329,11 +353,7 @@ const InicioScreen = () => {
       precio: product.precio,
       imagen: `https://ui-avatars.com/api/?name=${encodeURIComponent(product.nombre)}&background=E8EAF6&color=6C63FF&size=200&bold=true`,
     });
-    Alert.alert(
-      "✅ Agregado al carrito",
-      `${product.nombre} — $${product.precio.toFixed(2)}`,
-      [{ text: "OK" }]
-    );
+    showToast("Agregado al carrito", `${product.nombre} — $${product.precio.toFixed(2)}`);
   };
 
   const renderHeader = () => (
@@ -465,6 +485,16 @@ const InicioScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8F9FE" />
       
+      {toastVisible && (
+        <Animated.View style={[styles.toastContainer, { transform: [{ translateY: toastY }] }]}>
+          <Ionicons name="checkmark-circle" size={24} color="#6C63FF" />
+          <View style={styles.toastTextContainer}>
+            <Text style={styles.toastTitle}>{toastData.title}</Text>
+            <Text style={styles.toastSubtitle} numberOfLines={1}>{toastData.subtitle}</Text>
+          </View>
+        </Animated.View>
+      )}
+
       {/* Buscador fijo fuera del FlatList para que nunca pierda el foco */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
@@ -550,8 +580,8 @@ const modalStyles = StyleSheet.create({
   priceLabel: { fontSize: 14, color: "#aaa" },
   sectionTitle: { fontSize: 15, fontWeight: "700", color: "#2D3436", marginBottom: 8, marginTop: 4 },
   description: { fontSize: 14, color: "#636E72", lineHeight: 22, marginBottom: 20 },
-  infoGrid: { flexDirection: "row", flexWrap: "wrap", marginBottom: 24 },
-  infoCard: { backgroundColor: "#F8F9FE", borderRadius: 14, padding: 14, alignItems: "center", width: (SCREEN_WIDTH - 44 - 10) / 2, margin: 5 },
+  infoGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 24 },
+  infoCard: { backgroundColor: "#F8F9FE", borderRadius: 14, padding: 14, alignItems: "center", width: "48%", marginBottom: 12 },
   infoLabel: { fontSize: 11, color: "#aaa", marginTop: 4, textTransform: "uppercase", fontWeight: "600" },
   infoValue: { fontSize: 13, color: "#2D3436", fontWeight: "700", textAlign: "center" },
   footer: { paddingHorizontal: 22, paddingTop: 10 },
@@ -611,6 +641,10 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 18, fontWeight: "800", color: "#2D3436", marginTop: 10 },
   emptyText: { fontSize: 14, color: "#aaa", textAlign: "center", paddingHorizontal: 30 },
   footerLoader: { paddingVertical: 20, alignItems: "center" },
+  toastContainer: { position: "absolute", top: 0, alignSelf: "center", zIndex: 9999, backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: "#EDE9FE", flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 16, width: "90%", shadowColor: "#6C63FF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 },
+  toastTextContainer: { marginLeft: 10, flex: 1 },
+  toastTitle: { fontSize: 14, fontWeight: "bold", color: "#1A1A2E" },
+  toastSubtitle: { fontSize: 12, color: "#636E72", marginTop: 2 },
 });
 
 export default InicioScreen;
