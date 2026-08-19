@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +15,9 @@ import { useCart } from '@/context/CartContext';
 
 const CarritoScreen = () => {
   const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCart();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const styles = getStyles(isDark);
 
   const handleClearCart = () => {
     if (cartItems.length === 0) return;
@@ -102,7 +106,7 @@ const CarritoScreen = () => {
           <FlatList
             data={cartItems}
             renderItem={renderCartItem}
-            keyExtractor={(item) => item.id?.toString()}
+            keyExtractor={(item, index) => (item.id != null ? String(item.id) : String(index))}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           />
@@ -132,10 +136,10 @@ const CarritoScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FE',
+    backgroundColor: isDark ? '#121212' : '#F8F9FE',
   },
   header: {
     flexDirection: 'row',
@@ -147,11 +151,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   clearText: {
     fontSize: 14,
-    color: '#FF6B6B',
+    color: isDark ? '#FF8C8C' : '#FF6B6B',
     fontWeight: '600',
   },
   listContent: {
@@ -159,22 +163,22 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   cartCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
     borderRadius: 15,
     marginBottom: 15,
     flexDirection: 'row',
     padding: 12,
-    elevation: 3,
+    elevation: isDark ? 0 : 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
+    shadowOpacity: isDark ? 0 : 0.08,
     shadowRadius: 8,
   },
   productImage: {
     width: 90,
     height: 90,
     borderRadius: 10,
-    backgroundColor: '#E8EAF6',
+    backgroundColor: isDark ? '#2C2C2C' : '#E8EAF6',
   },
   itemInfo: {
     flex: 1,
@@ -189,14 +193,14 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
     flex: 1,
     marginRight: 8,
   },
   productPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#6C63FF',
+    color: isDark ? '#8A84FF' : '#6C63FF',
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -204,7 +208,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   qtyButton: {
-    backgroundColor: '#F0F2FA',
+    backgroundColor: isDark ? '#2C2C2C' : '#F0F2FA',
     width: 28,
     height: 28,
     borderRadius: 8,
@@ -214,13 +218,13 @@ const styles = StyleSheet.create({
   qtyButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#6C63FF',
+    color: isDark ? '#8A84FF' : '#6C63FF',
   },
   qtyText: {
     marginHorizontal: 12,
     fontSize: 15,
     fontWeight: '600',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   emptyContainer: {
     flex: 1,
@@ -231,25 +235,25 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
     marginTop: 15,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#999',
+    color: isDark ? '#BBBBBB' : '#999',
     textAlign: 'center',
     marginTop: 8,
   },
   summaryContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     padding: 20,
     paddingBottom: 110,
-    elevation: 8,
+    elevation: isDark ? 0 : 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
+    shadowOpacity: isDark ? 0 : 0.05,
     shadowRadius: 10,
   },
   summaryRow: {
@@ -259,39 +263,39 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#999',
+    color: isDark ? '#BBBBBB' : '#999',
   },
   summaryValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   totalRow: {
     marginTop: 8,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#F0F2FA',
+    borderTopColor: isDark ? '#2C2C2C' : '#F0F2FA',
     marginBottom: 16,
   },
   totalLabel: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   totalValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#6C63FF',
+    color: isDark ? '#8A84FF' : '#6C63FF',
   },
   checkoutButton: {
     backgroundColor: '#6C63FF',
     borderRadius: 15,
     paddingVertical: 16,
     alignItems: 'center',
-    elevation: 5,
+    elevation: isDark ? 0 : 5,
     shadowColor: '#6C63FF',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: isDark ? 0 : 0.3,
     shadowRadius: 10,
   },
   checkoutButtonText: {

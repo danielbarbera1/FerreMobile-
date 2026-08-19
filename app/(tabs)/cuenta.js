@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,31 @@ import {
   Image,
   Switch,
   Alert,
+  Appearance,
+  useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 const CuentaScreen = () => {
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const [darkModeEnabled, setDarkModeEnabled] = useState(isDark);
+
+  useEffect(() => {
+    setDarkModeEnabled(isDark);
+  }, [isDark]);
+
+  const handleDarkModeToggle = (value) => {
+    setDarkModeEnabled(value);
+    Appearance.setColorScheme(value ? 'dark' : 'light');
+  };
+
+  const styles = getStyles(isDark);
 
   // Datos de usuario de ejemplo
   const user = {
@@ -44,28 +62,28 @@ const CuentaScreen = () => {
           icon: 'person-outline',
           title: 'Editar Perfil',
           subtitle: 'Actualiza tus datos personales',
-          onPress: () => {},
+          onPress: () => router.push('/(vistas_secundarias)/editar-perfil'),
         },
         {
           id: 'orders',
           icon: 'receipt-outline',
           title: 'Mis Pedidos',
           subtitle: 'Historial de compras y seguimiento',
-          onPress: () => {},
+          onPress: () => router.push('/(vistas_secundarias)/mis-pedidos'),
         },
         {
           id: 'addresses',
           icon: 'location-outline',
           title: 'Direcciones de Envío',
           subtitle: 'Gestiona tus lugares de entrega',
-          onPress: () => {},
+          onPress: () => router.push('/(vistas_secundarias)/direccion-de-envio'),
         },
         {
           id: 'payments',
           icon: 'card-outline',
           title: 'Métodos de Pago',
           subtitle: 'Tarjetas y cuentas guardadas',
-          onPress: () => {},
+          onPress: () => router.push('/(vistas_secundarias)/metodos-de-pago'),
         },
       ],
     },
@@ -88,7 +106,7 @@ const CuentaScreen = () => {
           subtitle: 'Apariencia de la aplicación',
           isSwitch: true,
           value: darkModeEnabled,
-          onValueChange: setDarkModeEnabled,
+          onValueChange: handleDarkModeToggle,
         },
       ],
     },
@@ -100,14 +118,14 @@ const CuentaScreen = () => {
           icon: 'help-circle-outline',
           title: 'Centro de Ayuda',
           subtitle: 'Preguntas frecuentes y contacto',
-          onPress: () => {},
+          onPress: () => router.push('/(vistas_secundarias)/centro-de-ayuda'),
         },
         {
           id: 'terms',
           icon: 'document-text-outline',
           title: 'Términos y Condiciones',
           subtitle: 'Políticas de privacidad y servicios',
-          onPress: () => {},
+          onPress: () => router.push('/(vistas_secundarias)/terminos-y-condiciones'),
         },
       ],
     },
@@ -189,10 +207,10 @@ const CuentaScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FE',
+    backgroundColor: isDark ? '#121212' : '#F8F9FE',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -204,17 +222,17 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   profileCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
     borderRadius: 20,
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.06)',
-    elevation: 3,
+    boxShadow: isDark ? 'none' : '0px 4px 10px rgba(0, 0, 0, 0.06)',
+    elevation: isDark ? 0 : 3,
   },
   avatarContainer: {
     position: 'relative',
@@ -223,7 +241,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#E8EAF6',
+    backgroundColor: isDark ? '#2C2C2C' : '#E8EAF6',
   },
   editAvatarBadge: {
     position: 'absolute',
@@ -236,7 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: isDark ? '#1E1E1E' : '#FFFFFF',
   },
   userInfo: {
     marginLeft: 16,
@@ -245,16 +263,16 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   userEmail: {
     fontSize: 14,
-    color: '#6C63FF',
+    color: isDark ? '#8A84FF' : '#6C63FF',
     marginTop: 2,
   },
   userPhone: {
     fontSize: 12,
-    color: '#999',
+    color: isDark ? '#BBBBBB' : '#999',
     marginTop: 4,
   },
   sectionContainer: {
@@ -263,16 +281,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#999',
+    color: isDark ? '#BBBBBB' : '#999',
     marginBottom: 10,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   optionsGroup: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
     borderRadius: 18,
-    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.04)',
-    elevation: 2,
+    boxShadow: isDark ? 'none' : '0px 2px 8px rgba(0, 0, 0, 0.04)',
+    elevation: isDark ? 0 : 2,
     overflow: 'hidden',
   },
   optionItem: {
@@ -280,7 +298,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F2FA',
+    borderBottomColor: isDark ? '#2C2C2C' : '#F0F2FA',
   },
   lastOptionItem: {
     borderBottomWidth: 0,
@@ -289,7 +307,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#F0F2FA',
+    backgroundColor: isDark ? '#2C2C2C' : '#F0F2FA',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -300,16 +318,16 @@ const styles = StyleSheet.create({
   optionTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#2D3436',
+    color: isDark ? '#FFFFFF' : '#2D3436',
   },
   optionSubtitle: {
     fontSize: 12,
-    color: '#999',
+    color: isDark ? '#BBBBBB' : '#999',
     marginTop: 2,
   },
   logoutButton: {
     flexDirection: 'row',
-    backgroundColor: '#FFEBF0',
+    backgroundColor: isDark ? '#4A1C24' : '#FFEBF0',
     borderRadius: 15,
     paddingVertical: 15,
     justifyContent: 'center',
@@ -318,7 +336,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoutText: {
-    color: '#FF6B6B',
+    color: isDark ? '#FF8C8C' : '#FF6B6B',
     fontSize: 16,
     fontWeight: 'bold',
   },

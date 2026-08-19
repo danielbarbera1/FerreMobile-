@@ -15,6 +15,7 @@ import {
   RefreshControl,
   Alert,
   Animated,
+  useColorScheme,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -69,17 +70,20 @@ const toFloat = (val) => {
   return typeof val === "number" ? val : parseFloat(val) || 0;
 };
 
-const InfoCard = ({ icon, label, value }) => (
-  <View style={modalStyles.infoCard}>
+const InfoCard = ({ icon, label, value, styles }) => (
+  <View style={styles.infoCard}>
     <Ionicons name={icon} size={18} color="#6C63FF" />
-    <Text style={modalStyles.infoLabel}>{label}</Text>
-    <Text style={modalStyles.infoValue}>{value}</Text>
+    <Text style={styles.infoLabel}>{label}</Text>
+    <Text style={styles.infoValue}>{value}</Text>
   </View>
 );
 
 const ProductDetailModal = ({ visible, product, onClose, onAddToCart }) => {
   const [detail, setDetail] = useState(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const modalStyles = getModalStyles(isDark);
 
   useEffect(() => {
     if (visible && product) {
@@ -131,7 +135,7 @@ const ProductDetailModal = ({ visible, product, onClose, onAddToCart }) => {
               resizeMode="contain"
             />
             <TouchableOpacity style={modalStyles.closeBtn} onPress={onClose}>
-              <Ionicons name="close" size={22} color="#2D3436" />
+              <Ionicons name="close" size={22} color={isDark ? "#FFFFFF" : "#2D3436"} />
             </TouchableOpacity>
           </View>
 
@@ -165,10 +169,10 @@ const ProductDetailModal = ({ visible, product, onClose, onAddToCart }) => {
 
                 <Text style={modalStyles.sectionTitle}>Información</Text>
                 <View style={modalStyles.infoGrid}>
-                  <InfoCard icon="tag-outline" label="Marca" value={marca} />
-                  <InfoCard icon="layers-outline" label="Stock" value={`${stock} ${unidad}`} />
-                  {fullLocation && <InfoCard icon="location-outline" label="Ubicación" value={fullLocation} />}
-                  <InfoCard icon="pricetag-outline" label="Costo" value={`$${costo.toFixed(2)}`} />
+                  <InfoCard icon="pricetags-outline" label="Marca" value={marca} styles={modalStyles} />
+                  <InfoCard icon="layers-outline" label="Stock" value={`${stock} ${unidad}`} styles={modalStyles} />
+                  {fullLocation && <InfoCard icon="location-outline" label="Ubicación" value={fullLocation} styles={modalStyles} />}
+                  <InfoCard icon="pricetag-outline" label="Costo" value={`$${costo.toFixed(2)}`} styles={modalStyles} />
                 </View>
               </>
             )}
@@ -197,6 +201,10 @@ const ProductDetailModal = ({ visible, product, onClose, onAddToCart }) => {
 
 const InicioScreen = () => {
   const { addToCart } = useCart();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const styles = getStyles(isDark);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [categories, setCategories] = useState([DEFAULT_CATEGORY]);
@@ -364,7 +372,7 @@ const InicioScreen = () => {
           <Text style={styles.appTagline}>Tu ferretería de confianza</Text>
         </View>
         <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="notifications-outline" size={24} color="#2D3436" />
+          <Ionicons name="notifications-outline" size={24} color={isDark ? "#FFFFFF" : "#2D3436"} />
           <View style={styles.notificationDot} />
         </TouchableOpacity>
       </View>
@@ -482,8 +490,8 @@ const InicioScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FE" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#121212' : '#FFFFFF' }} edges={['top']}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={isDark ? "#121212" : "#F8F9FE"} />
       
       {toastVisible && (
         <Animated.View style={[styles.toastContainer, { transform: [{ translateY: toastY }] }]}>
@@ -557,56 +565,56 @@ const InicioScreen = () => {
   );
 };
 
-const modalStyles = StyleSheet.create({
+const getModalStyles = (isDark) => StyleSheet.create({
   overlay: { flex: 1, justifyContent: "flex-end" },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.5)" },
-  sheet: { backgroundColor: "#FFFFFF", borderTopLeftRadius: 30, borderTopRightRadius: 30, maxHeight: SCREEN_HEIGHT * 0.9, paddingBottom: 30 },
-  handle: { width: 40, height: 5, borderRadius: 3, backgroundColor: "#E0E0E0", alignSelf: "center", marginTop: 12, marginBottom: 8 },
-  imageWrapper: { alignItems: "center", backgroundColor: "#F3F4FB", paddingVertical: 24, position: "relative" },
+  sheet: { backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF", borderTopLeftRadius: 30, borderTopRightRadius: 30, maxHeight: SCREEN_HEIGHT * 0.9, paddingBottom: 30 },
+  handle: { width: 40, height: 5, borderRadius: 3, backgroundColor: isDark ? "#444" : "#E0E0E0", alignSelf: "center", marginTop: 12, marginBottom: 8 },
+  imageWrapper: { alignItems: "center", backgroundColor: isDark ? "#121212" : "#F3F4FB", paddingVertical: 24, position: "relative" },
   productImage: { width: SCREEN_WIDTH * 0.55, height: 180 },
-  closeBtn: { position: "absolute", top: 14, right: 18, backgroundColor: "#FFFFFF", width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center", boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.12)", elevation: 4 },
+  closeBtn: { position: "absolute", top: 14, right: 18, backgroundColor: isDark ? "#2C2C2C" : "#FFFFFF", width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center", boxShadow: isDark ? "none" : "0px 2px 6px rgba(0, 0, 0, 0.12)", elevation: isDark ? 0 : 4 },
   infoScroll: { paddingHorizontal: 22, paddingTop: 18 },
   loadingRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 30 },
-  loadingText: { color: "#999", fontSize: 14, marginLeft: 10 },
+  loadingText: { color: isDark ? "#BBBBBB" : "#999", fontSize: 14, marginLeft: 10 },
   topRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  categoryPill: { backgroundColor: "#EDE9FE", paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20, marginRight: 8 },
-  categoryPillText: { color: "#6C63FF", fontSize: 12, fontWeight: "600" },
+  categoryPill: { backgroundColor: isDark ? "#2A244D" : "#EDE9FE", paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20, marginRight: 8 },
+  categoryPillText: { color: isDark ? "#8A84FF" : "#6C63FF", fontSize: 12, fontWeight: "600" },
   stockPill: { flexDirection: "row", alignItems: "center", paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20 },
   stockDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
   stockText: { fontSize: 12, fontWeight: "600" },
-  productName: { fontSize: 22, fontWeight: "800", color: "#1A1A2E", marginBottom: 8, lineHeight: 28 },
+  productName: { fontSize: 22, fontWeight: "800", color: isDark ? "#FFFFFF" : "#1A1A2E", marginBottom: 8, lineHeight: 28 },
   priceRow: { flexDirection: "row", alignItems: "baseline", marginBottom: 20 },
-  price: { fontSize: 28, fontWeight: "900", color: "#6C63FF", marginRight: 6 },
-  priceLabel: { fontSize: 14, color: "#aaa" },
-  sectionTitle: { fontSize: 15, fontWeight: "700", color: "#2D3436", marginBottom: 8, marginTop: 4 },
-  description: { fontSize: 14, color: "#636E72", lineHeight: 22, marginBottom: 20 },
+  price: { fontSize: 28, fontWeight: "900", color: isDark ? "#8A84FF" : "#6C63FF", marginRight: 6 },
+  priceLabel: { fontSize: 14, color: isDark ? "#BBBBBB" : "#aaa" },
+  sectionTitle: { fontSize: 15, fontWeight: "700", color: isDark ? "#E0E0E0" : "#2D3436", marginBottom: 8, marginTop: 4 },
+  description: { fontSize: 14, color: isDark ? "#BBBBBB" : "#636E72", lineHeight: 22, marginBottom: 20 },
   infoGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 24 },
-  infoCard: { backgroundColor: "#F8F9FE", borderRadius: 14, padding: 14, alignItems: "center", width: "48%", marginBottom: 12 },
-  infoLabel: { fontSize: 11, color: "#aaa", marginTop: 4, textTransform: "uppercase", fontWeight: "600" },
-  infoValue: { fontSize: 13, color: "#2D3436", fontWeight: "700", textAlign: "center" },
+  infoCard: { backgroundColor: isDark ? "#121212" : "#F8F9FE", borderRadius: 14, padding: 14, alignItems: "center", width: "48%", marginBottom: 12 },
+  infoLabel: { fontSize: 11, color: isDark ? "#888" : "#aaa", marginTop: 4, textTransform: "uppercase", fontWeight: "600" },
+  infoValue: { fontSize: 13, color: isDark ? "#E0E0E0" : "#2D3436", fontWeight: "700", textAlign: "center" },
   footer: { paddingHorizontal: 22, paddingTop: 10 },
   addBtn: { backgroundColor: "#6C63FF", flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16, borderRadius: 16 },
   addBtnText: { color: "#FFF", fontSize: 16, fontWeight: "700", marginLeft: 8 },
 });
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8F9FE" },
+const getStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? "#121212" : "#F8F9FE" },
   listContent: { paddingHorizontal: 18, paddingBottom: 40 },
   headerContainer: { paddingTop: 12, paddingBottom: 10 },
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
-  appName: { fontSize: 28, fontWeight: "900", color: "#6C63FF", letterSpacing: -0.5 },
-  appTagline: { fontSize: 12, color: "#aaa", marginTop: 2 },
-  iconButton: { backgroundColor: "#FFFFFF", width: 46, height: 46, borderRadius: 15, justifyContent: "center", alignItems: "center", boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.07)", elevation: 3, position: "relative" },
-  notificationDot: { position: "absolute", top: 11, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: "#FF6B6B", borderWidth: 1.5, borderColor: "#FFF" },
-  searchWrapper: { paddingHorizontal: 18, paddingTop: 10, paddingBottom: 6, backgroundColor: "#F8F9FE" },
-  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 16, paddingHorizontal: 16, height: 52, borderWidth: 1.5, borderColor: "#EDE9FE", boxShadow: "0px 3px 10px rgba(108, 99, 255, 0.06)", elevation: 3 },
+  appName: { fontSize: 28, fontWeight: "900", color: isDark ? "#8A84FF" : "#6C63FF", letterSpacing: -0.5 },
+  appTagline: { fontSize: 12, color: isDark ? "#BBBBBB" : "#aaa", marginTop: 2 },
+  iconButton: { backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF", width: 46, height: 46, borderRadius: 15, justifyContent: "center", alignItems: "center", boxShadow: isDark ? "none" : "0px 2px 8px rgba(0, 0, 0, 0.07)", elevation: isDark ? 0 : 3, position: "relative" },
+  notificationDot: { position: "absolute", top: 11, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: "#FF6B6B", borderWidth: 1.5, borderColor: isDark ? "#1E1E1E" : "#FFF" },
+  searchWrapper: { paddingHorizontal: 18, paddingTop: 10, paddingBottom: 6, backgroundColor: isDark ? "#121212" : "#F8F9FE" },
+  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF", borderRadius: 16, paddingHorizontal: 16, height: 52, borderWidth: 1.5, borderColor: isDark ? "#2C2C2C" : "#EDE9FE", boxShadow: isDark ? "none" : "0px 3px 10px rgba(108, 99, 255, 0.06)", elevation: isDark ? 0 : 3 },
   searchIcon: { marginRight: 10 },
-  searchInput: { flex: 1, fontSize: 14, color: "#2D3436" },
+  searchInput: { flex: 1, fontSize: 14, color: isDark ? "#FFFFFF" : "#2D3436" },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 6, marginBottom: 12 },
-  sectionTitle: { fontSize: 18, fontWeight: "800", color: "#1A1A2E" },
-  productsCount: { fontSize: 13, color: "#aaa", fontWeight: "500" },
+  sectionTitle: { fontSize: 18, fontWeight: "800", color: isDark ? "#FFFFFF" : "#1A1A2E" },
+  productsCount: { fontSize: 13, color: isDark ? "#BBBBBB" : "#aaa", fontWeight: "500" },
   promosScroll: { marginBottom: 18 },
-  promoCard: { width: 240, borderRadius: 22, padding: 18, marginRight: 14, boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.18)", elevation: 6 },
+  promoCard: { width: 240, borderRadius: 22, padding: 18, marginRight: 14, boxShadow: isDark ? "none" : "0px 6px 12px rgba(0, 0, 0, 0.18)", elevation: isDark ? 0 : 6 },
   promoIconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.9)", justifyContent: "center", alignItems: "center", marginBottom: 10 },
   promoContent: { marginBottom: 10 },
   promoBadge: { color: "rgba(255,255,255,0.75)", fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 },
@@ -615,36 +623,36 @@ const styles = StyleSheet.create({
   promoCodeRow: { backgroundColor: "rgba(255,255,255,0.95)", paddingVertical: 6, paddingHorizontal: 12, borderRadius: 10, alignSelf: "flex-start" },
   promoCode: { fontSize: 12, fontWeight: "800" },
   categoriesScroll: { marginBottom: 18 },
-  categoryChip: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFFFFF", paddingVertical: 10, paddingHorizontal: 16, borderRadius: 22, marginRight: 10, borderWidth: 1.5, borderColor: "#EDE9FE", boxShadow: "0px 2px 6px rgba(108, 99, 255, 0.06)", elevation: 2 },
+  categoryChip: { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF", paddingVertical: 10, paddingHorizontal: 16, borderRadius: 22, marginRight: 10, borderWidth: 1.5, borderColor: isDark ? "#2C2C2C" : "#EDE9FE", boxShadow: isDark ? "none" : "0px 2px 6px rgba(108, 99, 255, 0.06)", elevation: isDark ? 0 : 2 },
   categoryChipSelected: { backgroundColor: "#6C63FF", borderColor: "#6C63FF" },
-  categoryChipText: { fontSize: 13, fontWeight: "600", color: "#2D3436" },
+  categoryChipText: { fontSize: 13, fontWeight: "600", color: isDark ? "#FFFFFF" : "#2D3436" },
   categoryChipTextSelected: { color: "#FFFFFF" },
-  productCard: { backgroundColor: "#FFFFFF", borderRadius: 18, marginBottom: 14, flexDirection: "row", padding: 14, boxShadow: "0px 4px 10px rgba(108, 99, 255, 0.08)", elevation: 4 },
+  productCard: { backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF", borderRadius: 18, marginBottom: 14, flexDirection: "row", padding: 14, boxShadow: isDark ? "none" : "0px 4px 10px rgba(108, 99, 255, 0.08)", elevation: isDark ? 0 : 4 },
   imageContainer: { position: "relative" },
-  productImage: { width: 100, height: 100, borderRadius: 14, backgroundColor: "#F3F4FB" },
+  productImage: { width: 100, height: 100, borderRadius: 14, backgroundColor: isDark ? "#121212" : "#F3F4FB" },
   stockBadge: { position: "absolute", bottom: 6, left: 0, right: 0, marginHorizontal: 4, flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 3, paddingHorizontal: 8, borderRadius: 8 },
   stockDot: { width: 6, height: 6, borderRadius: 3, marginRight: 4 },
   stockBadgeText: { fontSize: 9, fontWeight: "700" },
   productInfo: { flex: 1, marginLeft: 14, justifyContent: "space-between" },
-  categoryTag: { fontSize: 10, color: "#aaa", fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5 },
-  productName: { fontSize: 14, fontWeight: "800", color: "#1A1A2E", marginTop: 3, lineHeight: 20 },
-  brandText: { fontSize: 11, color: "#aaa", marginTop: 2 },
+  categoryTag: { fontSize: 10, color: isDark ? "#888" : "#aaa", fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5 },
+  productName: { fontSize: 14, fontWeight: "800", color: isDark ? "#FFFFFF" : "#1A1A2E", marginTop: 3, lineHeight: 20 },
+  brandText: { fontSize: 11, color: isDark ? "#888" : "#aaa", marginTop: 2 },
   stockRow: { flexDirection: "row", alignItems: "center", marginTop: 4 },
-  stockText: { fontSize: 11, color: "#aaa", marginLeft: 4 },
+  stockText: { fontSize: 11, color: isDark ? "#888" : "#aaa", marginLeft: 4 },
   priceRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 8 },
-  productPrice: { fontSize: 18, fontWeight: "900", color: "#6C63FF" },
+  productPrice: { fontSize: 18, fontWeight: "900", color: isDark ? "#8A84FF" : "#6C63FF" },
   addButton: { flexDirection: "row", alignItems: "center", backgroundColor: "#6C63FF", paddingVertical: 8, paddingHorizontal: 14, borderRadius: 12 },
   addButtonText: { color: "#FFFFFF", fontSize: 12, fontWeight: "700", marginLeft: 4 },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  loadingText: { marginTop: 12, fontSize: 15, color: "#aaa" },
+  loadingText: { marginTop: 12, fontSize: 15, color: isDark ? "#888" : "#aaa" },
   emptyContainer: { alignItems: "center", justifyContent: "center", paddingVertical: 60 },
-  emptyTitle: { fontSize: 18, fontWeight: "800", color: "#2D3436", marginTop: 10 },
-  emptyText: { fontSize: 14, color: "#aaa", textAlign: "center", paddingHorizontal: 30 },
+  emptyTitle: { fontSize: 18, fontWeight: "800", color: isDark ? "#FFFFFF" : "#2D3436", marginTop: 10 },
+  emptyText: { fontSize: 14, color: isDark ? "#888" : "#aaa", textAlign: "center", paddingHorizontal: 30 },
   footerLoader: { paddingVertical: 20, alignItems: "center" },
-  toastContainer: { position: "absolute", top: 0, alignSelf: "center", zIndex: 9999, backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: "#EDE9FE", flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 16, width: "90%", shadowColor: "#6C63FF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 },
+  toastContainer: { position: "absolute", top: 0, alignSelf: "center", zIndex: 9999, backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: isDark ? "#2C2C2C" : "#EDE9FE", flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 16, width: "90%", shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 10, elevation: 5 },
   toastTextContainer: { marginLeft: 10, flex: 1 },
-  toastTitle: { fontSize: 14, fontWeight: "bold", color: "#1A1A2E" },
-  toastSubtitle: { fontSize: 12, color: "#636E72", marginTop: 2 },
+  toastTitle: { fontSize: 14, fontWeight: "bold", color: isDark ? "#FFFFFF" : "#1A1A2E" },
+  toastSubtitle: { fontSize: 12, color: isDark ? "#BBBBBB" : "#636E72", marginTop: 2 },
 });
 
 export default InicioScreen;
