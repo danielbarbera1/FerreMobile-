@@ -10,7 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import AgregarMetodoPagoModal from './agregar_metodo_pago';
+import AgregarMetodoPagoModal from '@/components/modals/agregar_metodo_pago';
 
 const PAYMENT_METHODS = [
   {

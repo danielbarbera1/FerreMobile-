@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import DetallePedidoModal from './detalle-pedidos';
+import DetallePedidoModal from '@/components/modals/detalle-pedidos';
 
 const FILTER_TABS = [
   { id: 'todos', label: 'Todos' },
